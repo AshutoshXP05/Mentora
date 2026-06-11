@@ -33,9 +33,7 @@ const createCourse = asyncHandler(async (req, res) => {
 const getPublishedCourse = asyncHandler(async (req, res) => {
     // const courses = await Course.find({ isPublished: true });
     const courses = await Course.find({ isPublished: true }).populate("lectures");
-    if (courses.length === 0) {
-        throw new ApiError(404, "No published courses found");
-    }
+    // Don't throw error if no courses found - just return empty array
     return res.status(200).json(
         new ApiResponse(200, courses, "Published courses retrieved successfully")
     )
@@ -75,7 +73,10 @@ const editCourse = asyncHandler(async (req, res) => {
         thumbnail = await uploadOnCloudinary(req.file.path);
     }
 
-    const updateData = { title, subTitle, description, category, price, level, isPublished, thumbnail };
+    const updateData = { title, subTitle, description, category, price: price ? Number(price) : 0, level, isPublished };
+    if (thumbnail) {
+        updateData.thumbnail = thumbnail;
+    }
 
     const updatedCourse = await Course.findByIdAndUpdate(id, updateData, { new: true })
 

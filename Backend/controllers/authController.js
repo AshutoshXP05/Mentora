@@ -124,15 +124,15 @@ const verifyOTP = asyncHandler(async (req, res) => {
 
     const user = await User.findOne({ email });
 
+    if (!user) {
+        throw new ApiError(404, "Invalid Email");
+    }
+
     if ( user.otpExpires < Date.now()) {
         throw new ApiError(404, "OTP Expired. Please request a new OTP");
     }
 
-     if (!user) {
-        throw new ApiError(404, "Invalid Email");
-    }
-
-     if ( user.resetOtp != otp ) {
+    if ( user.resetOtp != otp ) {
         throw new ApiError(404, "Invalid OTP");
     }
 
