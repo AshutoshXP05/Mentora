@@ -9,21 +9,41 @@ import { serverUrl } from "../App";
 const ViewLecture = () => {
   const { id } = useParams();
   const { courseData } = useSelector((state) => state.course);
-  const { userData } = useSelector((state) => state.user);
-  const selectedCourse = courseData?.data.find((course) => course._id === id);
+  const courses = Array.isArray(courseData) ? courseData : courseData?.data || [];
+  const selectedCourse = courses.find((course) => course._id === id);
   const navigate = useNavigate();
   const [creatorData, setCreatorData] = useState(null);
-  const [selectedLecture, setSelectedLecture] = useState(
-    selectedCourse?.lectures?.[0] || null
-  );
+  const [courseDetails, setCourseDetails] = useState(selectedCourse || null);
+  const [selectedLecture, setSelectedLecture] = useState(null);
+
+  useEffect(() => {
+    const fetchCourseLectures = async () => {
+      try {
+        const result = await axios.get(
+          `${serverUrl}/api/lecture/courselecture/${id}`,
+          { withCredentials: true }
+        );
+        setCourseDetails(result.data);
+      } catch (error) {
+        console.log("Error fetching course lectures:", error);
+      }
+    };
+    fetchCourseLectures();
+  }, [id]);
+
+  useEffect(() => {
+    if (courseDetails?.lectures?.length > 0 && !selectedLecture) {
+      setSelectedLecture(courseDetails.lectures[0]);
+    }
+  }, [courseDetails, selectedLecture]);
 
   useEffect(() => {
     const handleCreator = async () => {
-      if (selectedCourse?.creator) {
+      if (courseDetails?.creator) {
         try {
           const result = await axios.post(
             `${serverUrl}/api/course/creator`,
-            { userId: selectedCourse.creator },
+            { userId: courseDetails.creator },
             { withCredentials: true }
           );
           setCreatorData(result.data);
@@ -33,7 +53,7 @@ const ViewLecture = () => {
       }
     };
     handleCreator();
-  }, [selectedCourse]);
+  }, [courseDetails]);
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col md:flex-row">
@@ -49,13 +69,13 @@ const ViewLecture = () => {
               <IoMdArrowRoundBack size={22} />
             </button>
             <h1 className="text-lg md:text-2xl font-bold text-gray-800">
-              {selectedCourse?.title || "Course Title"}
+              {courseDetails?.title || "Course Title"}
             </h1>
           </div>
 
           <div className="text-sm text-gray-500 flex gap-4">
-            <span>Category: {selectedCourse?.category || "N/A"}</span>
-            <span>Level: {selectedCourse?.level || "Beginner"}</span>
+            <span>Category: {courseDetails?.category || "N/A"}</span>
+            <span>Level: {courseDetails?.level || "Beginner"}</span>
           </div>
         </div>
 
@@ -96,8 +116,8 @@ const ViewLecture = () => {
           </h3>
 
           <div className="space-y-3 max-h-[70vh] overflow-y-auto pr-2 custom-scrollbar">
-            {selectedCourse?.lectures?.length > 0 ? (
-              selectedCourse.lectures.map((lecture, index) => (
+            {courseDetails?.lectures?.length > 0 ? (
+              courseDetails.lectures.map((lecture, index) => (
                 <button
                   key={index}
                   onClick={() => setSelectedLecture(lecture)}

@@ -1,8 +1,9 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { FaStar, FaPlayCircle, FaLock } from "react-icons/fa";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
 import { setSelectedCourse } from "../redux/courseSlice";
+import { setUserData } from "../redux/userSlice";
 import EmptyImage from "../assets/EmptyImage.jpg";
 import axios from "axios";
 import { serverUrl } from "../App";
@@ -31,16 +32,41 @@ export default function ViewCourse() {
   const [comment, setComment] = useState("");
   const [loading, setLoading] = useState(false);
 
+  const checkEnrollment = useCallback(() => {
+    const enrolled = userData?.enrolledCourses?.some(
+      (cid) =>
+        (typeof cid === "string" ? cid : cid._id).toString() === id.toString()
+    );
+
+    setIsEnrolled(!!enrolled);
+  }, [userData, id]);
+
   useEffect(() => {
     checkEnrollment();
 
+    let found = false;
     if (courseData?.data && Array.isArray(courseData.data)) {
       const currentCourse = courseData.data.find((c) => c._id === id);
       if (currentCourse) {
         dispatch(setSelectedCourse(currentCourse));
+        found = true;
       }
     }
-  }, [courseData, id, dispatch, userData]);
+
+    if (!found) {
+      const fetchCourseDetail = async () => {
+        try {
+          const res = await axios.get(`${serverUrl}/api/course/getcourse/${id}`, {
+            withCredentials: true,
+          });
+          dispatch(setSelectedCourse(res.data.data));
+        } catch (err) {
+          console.log("Fetch course detail error:", err);
+        }
+      };
+      fetchCourseDetail();
+    }
+  }, [courseData, id, dispatch, checkEnrollment]);
 
   useEffect(() => {
     const loadCreator = async () => {
@@ -64,18 +90,20 @@ export default function ViewCourse() {
     if (selectedCourse?.creator) {
       fetchCreatorCourses(dispatch, selectedCourse.creator);
     }
-  }, [selectedCourse]);
-
-  const checkEnrollment = () => {
-    const enrolled = userData?.enrolledCourses?.some(
-      (cid) =>
-        (typeof cid === "string" ? cid : cid._id).toString() === id.toString()
-    );
-
-    if (enrolled) setIsEnrolled(true);
-  };
+  }, [selectedCourse, dispatch]);
 
   const handleEnroll = async (userId, id) => {
+    if (!userData) {
+      toast.error("Please login to enroll");
+      navigate("/login");
+      return;
+    }
+
+    if (userData.role === "educator") {
+      toast.error("Educators cannot enroll in courses");
+      return;
+    }
+
     try {
       const orderData = await axios.post(
         `${serverUrl}/api/payment/razorpay-order`,
@@ -102,6 +130,9 @@ export default function ViewCourse() {
               { withCredentials: true }
             );
             toast.success(verify.data.message);
+            if (verify.data.user) {
+              dispatch(setUserData(verify.data.user));
+            }
             setIsEnrolled(true);
           } catch (err) {
             toast.error(err.response?.data?.message);
@@ -112,6 +143,7 @@ export default function ViewCourse() {
       const rzp = new window.Razorpay(options);
       rzp.open();
     } catch (err) {
+      console.error(err);
       toast.error("Enrollment failed.");
     }
   };
@@ -218,7 +250,7 @@ export default function ViewCourse() {
         <div className="grid lg:grid-cols-2 gap-8">
           {/* Lecture list */}
           <div className="bg-white rounded-2xl shadow p-6 border border-gray-200 max-h-[520px] overflow-y-auto">
-            {selectedCourse?.lectures?.map((lec, index) => (
+            {selectedCourse?.lectures?.map((lec) => (
               <button
                 key={lec._id}
                 disabled={!lec.isPreviewFree}

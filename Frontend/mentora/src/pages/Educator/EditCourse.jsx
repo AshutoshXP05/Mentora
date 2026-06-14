@@ -52,10 +52,10 @@ export default function EditCourse() {
           title: course.title || "",
           subTitle: course.subTitle || "",
           description: course.description || "",
-          category: ["AI Basics", "Web Dev", "Data Science", "DSA Mastery"].includes(course.category)
+          category: ["AI Basics", "Web Dev", "UI/UX Design", "Data Science", "DSA Mastery"].includes(course.category)
             ? course.category
             : "Other",
-          otherCategory: ["AI Basics", "Web Dev", "Data Science", "DSA Mastery"].includes(course.category)
+          otherCategory: ["AI Basics", "Web Dev", "UI/UX Design", "Data Science", "DSA Mastery"].includes(course.category)
             ? ""
             : course.category,
           level: course.level || "",
@@ -65,6 +65,7 @@ export default function EditCourse() {
         });
         setThumbnailPreview(course.thumbnail || EmptyImage);
       } catch (err) {
+        console.error(err);
         toast.error("Failed to load course data");
       }
     };
@@ -111,15 +112,16 @@ export default function EditCourse() {
 
       const updated = result.data.data;
 console.log("Updated " , updated );
+      const currentCourses = courseData?.data || [];
       if ( updated.isPublished ) {
-        const updateCourses = courseData?.data.map((c) => c._id === id ? updated : c  )
-        if ( !courseData?.data.some(c => c._id === id) ) {
+        let updateCourses = currentCourses.map((c) => c._id === id ? updated : c  );
+        if ( !currentCourses.some(c => c._id === id) ) {
           updateCourses.push(updated)
         }
         dispatch(setCourseData({ ...courseData, data: updateCourses }));
       }
       else {
-        const filteredCourses = courseData?.data.filter((c) => c._id !== id);
+        const filteredCourses = currentCourses.filter((c) => c._id !== id);
         dispatch(setCourseData({ ...courseData, data: filteredCourses }));
       }
       fetchCreatorCourses(dispatch, userData._id);
@@ -230,6 +232,7 @@ console.log("Updated " , updated );
                 <option value="">Select Category</option>
                 <option value="AI Basics">AI Basics</option>
                 <option value="Web Dev">Web Dev</option>
+                <option value="UI/UX Design">UI/UX Design</option>
                 <option value="Data Science">Data Science</option>
                 <option value="DSA Mastery">DSA Mastery</option>
                 <option value="Other">Other</option>

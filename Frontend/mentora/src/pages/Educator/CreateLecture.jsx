@@ -51,7 +51,7 @@ const CreateLecture = () => {
       }
     };
     getCourseLectures();
-  }, []);
+  }, [id, dispatch]);
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-indigo-50 to-purple-50 p-4">
@@ -106,7 +106,7 @@ const CreateLecture = () => {
         </h2>
 
         <div className="space-y-3">
-          {lectureData?.length === 0 ? (
+          {!lectureData || lectureData.length === 0 ? (
             <div className="text-center py-10 text-gray-500">
               <Video size={40} className="mx-auto mb-3 opacity-50" />
               No lectures added yet.

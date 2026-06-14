@@ -10,5 +10,5 @@ export default function useGetCreatorCourse() {
     if (userData?._id) {
       fetchCreatorCourses(dispatch, userData._id);
     }
-  }, [userData]);
+  }, [userData, dispatch]);
 }

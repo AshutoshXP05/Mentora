@@ -19,7 +19,7 @@ const useGetAllReviews = () => {
         }
     }
     allReviews();
-  }, [])
+  }, [dispatch])
 }
 
 export default useGetAllReviews

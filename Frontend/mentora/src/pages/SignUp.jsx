@@ -42,7 +42,7 @@ export default function Signup() {
         { name, email, password, role },
         { withCredentials: true }
       );
-      dispatch(setUserData(result.data));
+      dispatch(setUserData(result.data.data));
       setLoading(false);
       toast.success("Signup Successful");
       navigate("/");
@@ -66,7 +66,7 @@ export default function Signup() {
         { name:Gname, email:Gemail, role:formData.role },
         { withCredentials: true }
       );
-      dispatch(setUserData(result.data));
+      dispatch(setUserData(result.data.data));
       navigate("/");
       toast.success("Signup Successful");
     }

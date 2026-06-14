@@ -44,6 +44,9 @@ const userSchema = new mongoose.Schema({
         type: Boolean,
         default: false,
     },
+    otpVerifiedExpires: {
+        type: Date,
+    },
 
 }, {timestamps: true});
 

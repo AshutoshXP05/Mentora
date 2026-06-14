@@ -8,14 +8,18 @@ export default function AllCoursesPage() {
   const { courseData } = useSelector((state) => state.course);
   const { reviewData } = useSelector((state) => state.review);
 
-  const courses = courseData?.data || [];
+  // courseData can be either array directly or wrapped in data property
+  const courses = Array.isArray(courseData) ? courseData : courseData?.data || [];
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategories, setSelectedCategories] = useState([]);
   const navigate = useNavigate();
+  
+
 
   const categories = [
     "AI Basics",
     "Web Dev",
+    "UI/UX Design",
     "Data Science",
     "DSA Mastery",
     "Other",
@@ -124,7 +128,11 @@ export default function AllCoursesPage() {
           {/* COURSES GRID */}
           <div className="flex-1 grid sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-8">
 
-            {filteredCourses.length === 0 ? (
+            {courses.length === 0 ? (
+              <p className="text-gray-500 col-span-full text-center mt-10 text-lg">
+                Loading courses... If this persists, no published courses are available yet.
+              </p>
+            ) : filteredCourses.length === 0 ? (
               <p className="text-gray-500 col-span-full text-center mt-10 text-lg">
                 No courses found matching your filters.
               </p>

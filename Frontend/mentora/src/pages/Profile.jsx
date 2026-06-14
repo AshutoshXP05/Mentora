@@ -73,15 +73,17 @@ function Profile() {
             </div>
           </div>
 
-           <div className="flex items-center gap-3">
-            <BookOpen className="text-blue-600" size={22} />
-            <div>
-              <p className="text-sm text-gray-500">Enrolled Courses</p>
-              <p className="font-medium text-gray-800">
-                {enrolledCourses} {enrolledCourses === 1 ? "Course" : "Courses"}
-              </p>
+          {userData?.role !== "educator" && (
+            <div className="flex items-center gap-3">
+              <BookOpen className="text-blue-600" size={22} />
+              <div>
+                <p className="text-sm text-gray-500">Enrolled Courses</p>
+                <p className="font-medium text-gray-800">
+                  {enrolledCourses} {enrolledCourses === 1 ? "Course" : "Courses"}
+                </p>
+              </div>
             </div>
-          </div>
+          )}
 
           {/* Joined On */}
           <div className="flex items-center gap-3">

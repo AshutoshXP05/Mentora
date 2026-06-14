@@ -2,6 +2,7 @@
 import { FaStar } from "react-icons/fa6";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import EmptyImage from "../assets/EmptyImage.jpg";
 export default function Card({ thumbnail, title, category, price, id, reviews }) {
 
     const { reviewData } = useSelector((state) => state.review);
@@ -23,7 +24,7 @@ export default function Card({ thumbnail, title, category, price, id, reviews })
         <div className="w-80 rounded-2xl shadow-xl hover:shadow-3xl transition-all duration-500 overflow-hidden bg-white border border-gray-200 hover:-translate-y-2 group" onClick={() => navigate(`/viewcourse/${id}`)}>
             <div className="relative h-48 w-full overflow-hidden">
                 <img
-                    src={thumbnail || "No title"}
+                    src={thumbnail || EmptyImage}
                     alt={title}
                     className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
                 />

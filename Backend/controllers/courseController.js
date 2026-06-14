@@ -46,9 +46,6 @@ const getCreatorCourses = asyncHandler(async (req, res) => {
         throw new ApiError(403, "Access denied. You can only access your own courses.");
     }
     const course = await Course.find({ creator: id });
-    if (course.length === 0) {
-        throw new ApiError(404, "No courses found for this creator");
-    }
     return res.status(200).json(
         new ApiResponse(200, course, "Creator's courses retrieved successfully")
     )
@@ -121,7 +118,7 @@ const removeCourse = asyncHandler(async (req, res) => {
 
 const getCreatorById = asyncHandler ( async ( req, res) => {
     const {userId} = req.body
-    const user = await User.findById(userId).select("-password ");
+    const user = await User.findById(userId).select("-password");
     if ( !user ) {
         throw new ApiError(404, "User not found");
     }

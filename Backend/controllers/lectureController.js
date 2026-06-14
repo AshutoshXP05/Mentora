@@ -11,19 +11,25 @@ const createLecture = asyncHandler(async (req, res) => {
         throw new ApiError(400, "Lecture title is required");
     }
 
-    const course = await Course.findById(id).populate("lectures");
+    const course = await Course.findById(id);
     if (!course) {
         throw new ApiError(404, "Course not found");
     }
+    if (String(course.creator) !== String(req.user._id)) {
+        throw new ApiError(403, "Access denied. You can only add lectures to your own courses.");
+    }
+
     const lecture = await Lecture.create({
         lectureTitle
-    })
-    await Course.updateOne(
-        { _id: course._id },
-        { $push: { lectures: lecture._id } }
-    );
-    await course.populate("lectures")
-    return res.status(201).json({ lecture, course });
+    });
+    
+    const updatedCourse = await Course.findByIdAndUpdate(
+        id,
+        { $push: { lectures: lecture._id } },
+        { new: true }
+      ).populate("lectures");
+
+    return res.status(201).json({ lecture, course: updatedCourse });
 });
 
 const getCourseLecture = asyncHandler(async (req, res) => {
@@ -45,6 +51,15 @@ const getCourseLecture = asyncHandler(async (req, res) => {
 const editLecture = asyncHandler(async (req, res) => {
     const { lectureId } = req.params;
     const { isPreviewFree, lectureTitle } = req.body;
+
+    const course = await Course.findOne({ lectures: lectureId });
+    if (!course) {
+        throw new ApiError(404, "Course containing this lecture not found");
+    }
+    if (String(course.creator) !== String(req.user._id)) {
+        throw new ApiError(403, "Access denied. You can only edit lectures of your own courses.");
+    }
+
     const lecture = await Lecture.findById(lectureId);
     if (!lecture) {
         throw new ApiError(404, "Lecture not found");
@@ -60,8 +75,8 @@ const editLecture = asyncHandler(async (req, res) => {
     if (lectureTitle) {
         lecture.lectureTitle = lectureTitle;
     }
-    if (typeof isPreviewFree === "boolean") {
-        lecture.isPreviewFree = isPreviewFree;
+    if (isPreviewFree !== undefined) {
+        lecture.isPreviewFree = isPreviewFree === "true" || isPreviewFree === true;
     }
 
     await lecture.save();
@@ -70,12 +85,21 @@ const editLecture = asyncHandler(async (req, res) => {
 
 const removeLecture = asyncHandler(async (req, res) => {
     const { lectureId } = req.params;
+
+    const course = await Course.findOne({ lectures: lectureId });
+    if (!course) {
+        throw new ApiError(404, "Course containing this lecture not found");
+    }
+    if (String(course.creator) !== String(req.user._id)) {
+        throw new ApiError(403, "Access denied. You can only delete lectures of your own courses.");
+    }
+
     const lecture = await Lecture.findByIdAndDelete(lectureId);
     if (!lecture) {
         throw new ApiError(404, "Lecture not found");
     }
-    await Course.updateMany(
-        { lectures: lectureId },
+    await Course.updateOne(
+        { _id: course._id },
         { $pull: { lectures: lectureId } }
     )
     return res.status(200).json({ message: "Lecture deleted successfully" })

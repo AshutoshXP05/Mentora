@@ -1,5 +1,5 @@
 import React from "react";
-import { motion } from "framer-motion";
+import { motion as Motion } from "framer-motion";
 import { FaCode, FaPaintBrush, FaMobileAlt, FaRobot, FaDatabase, FaLock } from "react-icons/fa";
 
 function ExploreCourses() {
@@ -19,7 +19,7 @@ function ExploreCourses() {
 
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8 w-full">
         {courses.map((course, i) => (
-          <motion.div
+          <Motion.div
             key={i}
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
@@ -46,7 +46,7 @@ function ExploreCourses() {
             <p className="text-gray-600 text-sm text-center">
               {course.desc}
             </p>
-          </motion.div>
+          </Motion.div>
         ))}
       </div>
     </div>

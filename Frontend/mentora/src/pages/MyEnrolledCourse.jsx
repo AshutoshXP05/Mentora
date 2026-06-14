@@ -18,21 +18,17 @@ import { useNavigate } from "react-router-dom";
 import { FaPlayCircle } from "react-icons/fa";
 import { MdOutlineCategory } from "react-icons/md";
 import { PiGraduationCap } from "react-icons/pi";
-import EmptyImgae from "../assets/EmptyImage.jpg"
+import EmptyImgae from "../assets/EmptyImage.jpg";
+import Navbar from "../components/Navbar";
 
 const MyEnrolledCourse = () => {
   const { userData } = useSelector((state) => state.user);
-  const { courseData } = useSelector((state) => state.course);
   const navigate = useNavigate();
 
-  // Get enrolled course objects from IDs
-  const enrolledCourses =
-    courseData?.data?.filter((course) =>
-      userData?.enrolledCourses?.includes(course._id)
-    ) || [];
-
   return (
-    <div className="min-h-screen bg-gray-50 px-4 sm:px-8 py-10 mt-8">
+    <>
+      <Navbar />
+      <div className="min-h-screen bg-gray-50 px-4 sm:px-8 py-10 mt-16">
       {/* Page Header */}
       <div className="max-w-7xl mx-auto mb-8">
         <h1 className="text-2xl md:text-3xl font-bold text-gray-800">
@@ -45,7 +41,7 @@ const MyEnrolledCourse = () => {
 
       {/* Enrolled Courses Grid */}
       <div className="max-w-7xl mx-auto grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-        {userData?.enrolledCourses.length > 0 ? (
+        {userData?.enrolledCourses?.length > 0 ? (
           userData?.enrolledCourses.map((course, index) => (
             <div
               key={index}
@@ -117,6 +113,7 @@ const MyEnrolledCourse = () => {
         )}
       </div>
     </div>
+   </>
   );
 };
 

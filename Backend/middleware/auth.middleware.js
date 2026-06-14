@@ -24,3 +24,10 @@ export const verifyJwt = asyncHandler ( async ( req, res, next ) => {
         next();
     
 })
+
+export const requireEducator = asyncHandler( async ( req, res, next ) => {
+    if ( req.user?.role !== "educator" ) {
+        throw new ApiError(403, "Access denied. Only educators can perform this action.");
+    }
+    next();
+});

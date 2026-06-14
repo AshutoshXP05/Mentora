@@ -15,7 +15,7 @@ import CreateCourse from './pages/Educator/CreateCourse.jsx'
 import useGetCreatorCourse from './customHooks/useGetCreatorCourse.js'
 import EditCourse from './pages/Educator/EditCourse.jsx'
 import useGetPublisheCourse from './customHooks/useGetPublisheCourse.js'
-import AllCourses from './pages/Allcourses.jsx'
+import AllCourses from './pages/AllCourses.jsx'
 import CreateLecture from './pages/Educator/CreateLecture.jsx'
 import EditLecture from './pages/Educator/EditLecture.jsx'
 import ViewCourse from './pages/ViewCourse.jsx'
@@ -26,7 +26,6 @@ import About from './components/About.jsx'
 import useGetAllReviews from './customHooks/useGetAllReviews.js'
 export const serverUrl = "http://localhost:8000"
 function App() {
-   useGetCurrentUser();
    useGetCreatorCourse();
    useGetPublisheCourse();
    useGetAllReviews();
@@ -50,24 +49,23 @@ function App() {
             <Route path='/' element={<Home />} />
             <Route path='/about' element={<About />} />
             <Route path='/signup' element={!userData ? <Signup /> : <Navigate to={"/"} />} />
-            <Route path='/login' element={<Login />} />
-            <Route path='/profile' element={userData ? <Profile /> : <Navigate to={"/signup"} />} />
-            <Route path='/forgot-password' element={!userData ? <ForgotPassword /> : <Navigate to={"/signup"} />} />
-            <Route path='/editprofile' element={userData ? <EditProfile /> : <Navigate to={"/signup"} />} />
+            <Route path='/login' element={!userData ? <Login /> : <Navigate to={"/"} />} />
+            <Route path='/profile' element={userData ? <Profile /> : <Navigate to={"/login"} />} />
+            <Route path='/forgot-password' element={!userData ? <ForgotPassword /> : <Navigate to={"/"} />} />
+            <Route path='/editprofile' element={userData ? <EditProfile /> : <Navigate to={"/login"} />} />
 
-            <Route path='/dashboard' element={userData?.role === "educator" ? <Dashboard /> : <Navigate to={"/signup"} />} />
-            <Route path='/courses' element={userData?.role === "educator" ? <Courses /> : <Navigate to={"/signup"} />} />
-            <Route path='/create-courses' element={userData?.role === "educator" ? <CreateCourse /> : <Navigate to={"/signup"} />} />
-            <Route path='/editcourse/:id' element={userData?.role === "educator" ? <EditCourse /> : <Navigate to={"/signup"} />} />
-            {/* <Route path='/lecture' element={userData?.role === "educator" ? <Lecture /> : <Navigate to={"/signup"} />} /> */}
-            <Route path='/allcourses' element={userData? <AllCourses /> : <Navigate to={"/signup"} />} />
-            <Route path='/viewcourse/:id' element={userData? <ViewCourse /> : <Navigate to={"/signup"} />} />
+            <Route path='/dashboard' element={userData ? (userData.role === "educator" ? <Dashboard /> : <Navigate to={"/"} />) : <Navigate to={"/login"} />} />
+            <Route path='/courses' element={userData ? (userData.role === "educator" ? <Courses /> : <Navigate to={"/"} />) : <Navigate to={"/login"} />} />
+            <Route path='/create-courses' element={userData ? (userData.role === "educator" ? <CreateCourse /> : <Navigate to={"/"} />) : <Navigate to={"/login"} />} />
+            <Route path='/editcourse/:id' element={userData ? (userData.role === "educator" ? <EditCourse /> : <Navigate to={"/"} />) : <Navigate to={"/login"} />} />
+            {/* <Route path='/lecture' element={userData ? (userData.role === "educator" ? <Lecture /> : <Navigate to={"/"} />) : <Navigate to={"/login"} />} /> */}
+            <Route path='/allcourses' element={userData ? <AllCourses /> : <Navigate to={"/login"} />} />
+            <Route path='/viewcourse/:id' element={userData ? <ViewCourse /> : <Navigate to={"/login"} />} />
 
-            <Route path='/createlecture/:id' element={userData?.role === "educator" ? <CreateLecture /> : <Navigate to={"/signup"} />} />
-            <Route path='/editlecture/:id/:lectureId' element={userData?.role === "educator" ? <EditLecture /> : <Navigate to={"/signup"} />} />
-            <Route path='/viewlecture/:id' element={userData? <ViewLecture /> : <Navigate to={"/signup"} />} />
-            <Route path='/mycourses' element={userData ? <MyEnrolledCourse /> : <Navigate to={"/signup"} />} />
-            {/* <Route path='/mycourses' element={userData ? <MyEnrolledCourse /> : <Navigate to={"/signup"} />} /> */}
+            <Route path='/createlecture/:id' element={userData ? (userData.role === "educator" ? <CreateLecture /> : <Navigate to={"/"} />) : <Navigate to={"/login"} />} />
+            <Route path='/editlecture/:id/:lectureId' element={userData ? (userData.role === "educator" ? <EditLecture /> : <Navigate to={"/"} />) : <Navigate to={"/login"} />} />
+            <Route path='/viewlecture/:id' element={userData ? <ViewLecture /> : <Navigate to={"/login"} />} />
+            <Route path='/mycourses' element={userData ? (userData.role !== "educator" ? <MyEnrolledCourse /> : <Navigate to={"/courses"} />) : <Navigate to={"/login"} />} />
             
             
 

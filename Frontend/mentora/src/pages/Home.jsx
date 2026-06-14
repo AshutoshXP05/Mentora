@@ -3,7 +3,7 @@ import Navbar from "../components/Navbar.jsx";
 import Logo from "../components/Logo.jsx";
 import HomeImage from "../assets/HomeImage.jpg";
 import ExploreCourses from "../components/ExploreCourses.jsx";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import CardPage from "../components/CardPage.jsx";
 import About from "../components/About.jsx";
 import Footer from "../components/Footer.jsx";
@@ -45,18 +45,18 @@ function Home() {
           </p>
 
           <div className="flex flex-wrap gap-4 justify-center md:justify-start mt-4">
-            <a
-              href="/courses"
+            <Link
+              to="/allcourses"
               className="bg-white text-indigo-700 font-semibold px-7 py-3 rounded-xl shadow-md hover:bg-gray-100 hover:scale-105 transition-all duration-300"
             >
               Get Started
-            </a>
-            <a
-              href={handleGetStarted}
+            </Link>
+            <button
+              onClick={handleGetStarted}
               className="border border-white text-white px-7 py-3 rounded-xl font-semibold hover:bg-white hover:text-indigo-700 hover:scale-105 transition-all duration-300"
             >
               Learn More
-            </a>
+            </button>
           </div>
         </div>
 

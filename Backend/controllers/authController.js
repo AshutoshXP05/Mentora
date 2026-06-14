@@ -137,6 +137,7 @@ const verifyOTP = asyncHandler(async (req, res) => {
     }
 
     user.isOtpVerified = true;
+    user.otpVerifiedExpires = Date.now() + 5 * 60 * 1000; // valid for 5 minutes
     user.resetOtp = undefined;
     user.otpExpires = undefined;
 
@@ -155,14 +156,15 @@ const resetPassword = asyncHandler(async (req, res) => {
     const { email, password } = req.body;
     const user = await User.findOne({ email });
 
-    if (!user || !user.isOtpVerified) {
+    if (!user || !user.isOtpVerified || !user.otpVerifiedExpires || user.otpVerifiedExpires < Date.now()) {
         return res.status(400).json(
-            new ApiResponse(400, null, "OTP verification is required")
+            new ApiResponse(400, null, "OTP verification is required or has expired")
         )
     }
 
     user.password = password;
     user.isOtpVerified = false;
+    user.otpVerifiedExpires = undefined;
 
     await user.save();
 
@@ -183,7 +185,7 @@ const googleAuth = asyncHandler(async (req, res) => {
     user = await User.create({
       name,
       email,
-      role,
+      role: role || "student",
       password: Math.random().toString(36).slice(-8), // dummy password
     });
   }

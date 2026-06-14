@@ -11,7 +11,7 @@ import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import { BookOpen, Users, Star, IndianRupee } from "lucide-react";
 import EmptyImage from "../../assets/EmptyImage.jpg";
-import { motion } from "framer-motion";
+import { motion as Motion } from "framer-motion";
 
 export default function EducatorDashboard() {
   const { userData } = useSelector((state) => state.user);
@@ -66,13 +66,13 @@ export default function EducatorDashboard() {
   return (
     <div className="min-h-screen bg-gray-50 py-10 px-5 md:px-10 mt-4">
       
-      <motion.div
+      <Motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         className="bg-white rounded-2xl shadow-md p-6 flex flex-col md:flex-row justify-between items-center mb-10"
       >
         <div className="flex items-center gap-6">
-          <motion.img
+          <Motion.img
             whileHover={{ scale: 1.05 }}
             src={userData?.photoUrl || EmptyImage}
             alt="profile"
@@ -94,12 +94,11 @@ export default function EducatorDashboard() {
         >
           + Create New Course
         </Link>
-      </motion.div>
+      </Motion.div>
 
-      {/* Stats Section */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
         {stats.map((stat, index) => (
-          <motion.div
+          <Motion.div
             key={stat.label}
             initial={{ opacity: 0, y: 25 }}
             animate={{ opacity: 1, y: 0 }}
@@ -113,15 +112,14 @@ export default function EducatorDashboard() {
               <h3 className="text-3xl font-bold">{stat.value}</h3>
             </div>
             <div className="p-3 bg-white/20 rounded-full shadow-md">{stat.icon}</div>
-          </motion.div>
+          </Motion.div>
         ))}
       </div>
 
-      {/* Charts Section */}
       <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-8 mb-10">
 
         {/* Course Progress Chart */}
-        <motion.div
+        <Motion.div
           initial={{ opacity: 0, scale: 0.97 }}
           animate={{ opacity: 1, scale: 1 }}
           className="bg-white p-6 rounded-2xl shadow-md"
@@ -145,10 +143,10 @@ export default function EducatorDashboard() {
               No course data available
             </p>
           )}
-        </motion.div>
+        </Motion.div>
 
         {/* Enrollment Chart */}
-        <motion.div
+        <Motion.div
           initial={{ opacity: 0, scale: 0.97 }}
           animate={{ opacity: 1, scale: 1 }}
           className="bg-white p-6 rounded-2xl shadow-md"
@@ -172,7 +170,7 @@ export default function EducatorDashboard() {
               No enrollment data available
             </p>
           )}
-        </motion.div>
+        </Motion.div>
 
       </div>
     </div>

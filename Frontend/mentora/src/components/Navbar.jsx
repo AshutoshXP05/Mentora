@@ -47,8 +47,8 @@ export default function Navbar() {
   const links = [
     { name: "Home", href: "/" },
     { name: "About", href: "/about" },
-    { name: "My Courses", href: "/mycourses" },
-    { name: "Contact", href: "/contact" },
+    { name: "All Courses", href: "/allcourses" },
+    ...(userData?.role === "educator" ? [{ name: "Created Courses", href: "/courses" }] : [{ name: "My Courses", href: "/mycourses" }]),
   ];
 
   return (
@@ -120,15 +120,25 @@ export default function Navbar() {
                     >
                       <User size={16} /> Profile
                     </Link>
-                    <button
-                      onClick={() => {
-                        handleMyCourses();
-                        setDropdown(false);
-                      }}
-                      className="flex items-center gap-2 px-4 py-2 w-full text-left hover:bg-gray-50 text-gray-700"
-                    >
-                      <FaBookOpen size={16} /> My Courses
-                    </button>
+                    {userData?.role === "educator" ? (
+                      <Link
+                        to="/courses"
+                        className="flex items-center gap-2 px-4 py-2 hover:bg-gray-50 text-gray-700"
+                        onClick={() => setDropdown(false)}
+                      >
+                        <FaBookOpen size={16} /> Created Courses
+                      </Link>
+                    ) : (
+                      <button
+                        onClick={() => {
+                          handleMyCourses();
+                          setDropdown(false);
+                        }}
+                        className="flex items-center gap-2 px-4 py-2 w-full text-left hover:bg-gray-50 text-gray-700"
+                      >
+                        <FaBookOpen size={16} /> My Courses
+                      </button>
+                    )}
                     <button
                       onClick={handleLogout}
                       className="flex items-center gap-2 px-4 py-2 w-full text-left hover:bg-gray-50 text-red-600"
@@ -200,15 +210,25 @@ export default function Navbar() {
                   <User size={18} /> Profile
                 </Link>
 
-                <button
-                  onClick={() => {
-                    handleMyCourses();
-                    setDropdown(false);
-                  }}
-                  className="flex items-center gap-2 hover:text-indigo-600"
-                >
-                  <FaBookOpen size={16} /> My Courses
-                </button>
+                {userData?.role === "educator" ? (
+                  <Link
+                    to="/courses"
+                    className="flex items-center gap-2 hover:text-indigo-600"
+                    onClick={() => setOpen(false)}
+                  >
+                    <FaBookOpen size={16} /> Created Courses
+                  </Link>
+                ) : (
+                  <button
+                    onClick={() => {
+                      handleMyCourses();
+                      setOpen(false);
+                    }}
+                    className="flex items-center gap-2 hover:text-indigo-600"
+                  >
+                    <FaBookOpen size={16} /> My Courses
+                  </button>
+                )}
                 <button
                   onClick={() => {
                     handleLogout();

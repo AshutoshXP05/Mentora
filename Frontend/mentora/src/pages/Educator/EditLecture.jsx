@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { ArrowLeft, Trash2, Save, Upload } from "lucide-react";
 import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
@@ -17,10 +17,34 @@ const EditLecture = () => {
   const selectedLecture = lectureData?.find((lec) => lec._id === lectureId);
 
   const [videoUrl, setVideoUrl] = useState("");
-  const [isPreviewFree, setIsPreviewFree] = useState(selectedLecture?.isPreviewFree || false);
-  const [lectureTitle, setLectureTitle] = useState(selectedLecture?.lectureTitle || "");
+  const [isPreviewFree, setIsPreviewFree] = useState(false);
+  const [lectureTitle, setLectureTitle] = useState("");
   const [loading, setLoading] = useState(false);
   const [removeLoading, setRemoveLoading] = useState(false);
+
+  useEffect(() => {
+    if (!selectedLecture) {
+      const getCourseLectures = async () => {
+        try {
+          const result = await axios.get(
+            `${serverUrl}/api/lecture/courselecture/${id}`,
+            { withCredentials: true }
+          );
+          dispatch(setLectureData(result.data.lectures));
+        } catch (error) {
+          console.log("Error loading course lectures:", error);
+        }
+      };
+      getCourseLectures();
+    }
+  }, [id, dispatch, selectedLecture]);
+
+  useEffect(() => {
+    if (selectedLecture) {
+      setLectureTitle(selectedLecture.lectureTitle || "");
+      setIsPreviewFree(selectedLecture.isPreviewFree || false);
+    }
+  }, [selectedLecture]);
 
   const handleEditLecture = async () => {
     if (!lectureTitle.trim()) return toast.error("Lecture title is required");
@@ -172,7 +196,7 @@ const EditLecture = () => {
 
         <div className="flex justify-center mt-10">
           <button
-            onClick={() => navigate(`/course/${id}`)}
+            onClick={() => navigate(`/editcourse/${id}`)}
             className="flex items-center text-indigo-600 hover:text-indigo-800 font-medium transition"
           >
             <ArrowLeft size={18} className="mr-2" /> Back to Course

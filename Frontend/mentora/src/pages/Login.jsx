@@ -37,7 +37,7 @@ export default function Login() {
      const result = await axios.post(serverUrl + "/api/auth/login", {email, password}, {withCredentials: true})
      setLoading(false);
      console.log(result.data);
-     dispatch(setUserData(result.data));
+     dispatch(setUserData(result.data.data));
      toast.success("Login Successful")
      navigate("/")
     } 
@@ -61,7 +61,7 @@ export default function Login() {
           { name:Gname, email:Gemail, role},
           { withCredentials: true }
         );
-        dispatch(setUserData(result.data));
+        dispatch(setUserData(result.data.data));
         navigate("/");
         toast.success("Login Successful");
       }
