@@ -24,7 +24,7 @@ import ViewLecture from './pages/ViewLecture.jsx'
 import MyEnrolledCourse from './pages/MyEnrolledCourse.jsx'
 import About from './components/About.jsx'
 import useGetAllReviews from './customHooks/useGetAllReviews.js'
-export const serverUrl = "http://localhost:8000"
+export const serverUrl = import.meta.env.VITE_SERVER_URL || "http://localhost:8000"
 function App() {
    useGetCreatorCourse();
    useGetPublisheCourse();
