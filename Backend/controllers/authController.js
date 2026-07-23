@@ -6,6 +6,15 @@ import genToken from "../constants/token.js";
 import validator from "validator";
 import sendMail from "../constants/sendMail.js";
 
+const isProduction = process.env.NODE_ENV === "production" || process.env.RENDER === "true" || process.env.NODE_ENV !== "development";
+
+const getCookieOptions = (maxAge) => ({
+    httpOnly: true,
+    secure: isProduction,
+    sameSite: isProduction ? "none" : "lax",
+    ...(maxAge ? { maxAge } : {}),
+});
+
 const signUp = asyncHandler(async (req, res) => {
 
     const { name, email, password, role } = req.body;
@@ -34,12 +43,7 @@ const signUp = asyncHandler(async (req, res) => {
     }
 
     const token = await genToken(newUser._id)
-    res.cookie("token", token, {
-        httpOnly: true,
-        secure: false,
-        sameSite: "lax",
-        maxAge: 7 * 24 * 60 * 60 * 1000,
-    });
+    res.cookie("token", token, getCookieOptions(7 * 24 * 60 * 60 * 1000));
 
     return res
         .status(200)
@@ -67,12 +71,7 @@ const loginUser = asyncHandler(async (req, res) => {
     }
 
     const token = await genToken(user._id);
-    res.cookie("token", token, {
-        httpOnly: true,
-        secure: false,
-        sameSite: "lax",
-        maxAge: 7 * 24 * 60 * 60 * 1000,
-    });
+    res.cookie("token", token, getCookieOptions(7 * 24 * 60 * 60 * 1000));
 
     const loggedInUser = await User.findById(user._id).select("-password");
 
@@ -84,7 +83,7 @@ const loginUser = asyncHandler(async (req, res) => {
 });
 
 const logoutUser = asyncHandler(async (req, res) => {
-    await res.clearCookie("token")
+    res.clearCookie("token", getCookieOptions());
     return res
         .status(200)
         .json(
@@ -192,12 +191,7 @@ const googleAuth = asyncHandler(async (req, res) => {
 
   const token = await genToken(user._id);
 
-  res.cookie("token", token, {
-    httpOnly: true,
-    secure: false,
-    sameSite: "Lax",
-    maxAge: 24 * 60 * 60 * 1000, 
-  });
+  res.cookie("token", token, getCookieOptions(24 * 60 * 60 * 1000));
 
   const createdUser = await User.findById(user._id).select("-password");
 
